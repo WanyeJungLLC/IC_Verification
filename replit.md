@@ -22,8 +22,9 @@ Preferred communication style: Simple, everyday language.
 
 **State Management**: 
 - TanStack Query (React Query) for server state and API data fetching
-- React Context for theme management
-- Local component state for UI interactions
+- React Context for theme management and Internet Identity authentication
+- AuthProvider context manages authentication state, principal, and neuron ID
+- Local component state for UI interactions and modal orchestration
 
 **Design Philosophy**: The application uses a "Design System with Web3 Context" approach, combining Etherscan's clarity, Linear's modern UI, and Stripe's trust-building elements. Key principles include transparency first, progressive disclosure of complex blockchain details, and guided educational experiences for first-time voters.
 
@@ -40,21 +41,32 @@ Preferred communication style: Simple, everyday language.
 ### Core Features & Components
 
 **Proposal Management**:
-- Proposal listing with filtering by status (Active, Executed, Rejected, Pending)
-- Search by proposal ID
-- Sorting by date or vote count
+- Proposal listing with dynamic filtering by status (All, Active, Executed, Rejected)
+- Real-time search by proposal ID with instant results
+- Sorting options: newest first, oldest first, or most votes
 - Real-time proposal type categorization (Canister Upgrade, IC OS Election, Node Provider, Participant Management)
+- Empty state messaging when no proposals match filters
+- Responsive card-based layout with key metrics display
 
 **Verification System**:
-- Hash verification tools for comparing local builds with on-chain proposals
-- Interactive tutorials for learning verification processes
-- Script displays for different proposal types (canister upgrades, IC OS elections)
-- On-chain verification panels showing content hash comparisons
+- Integrated verification panel in ProposalDetailsModal showing hash comparison results
+- Visual indicators for verification status (success/mismatch) with color-coded badges
+- Git commit hash and WASM module hash display for canister upgrades
+- IC OS version and commit hash for IC OS elections
+- Verification script displays with copy-to-clipboard functionality
+- Interactive tutorials for learning verification processes in Learning Center
+- Real proposal examples (138130, 137938, 137937, 137936, 129394) used throughout
 
 **Voting Interface**:
-- Three-step voting flow: selection, confirmation, signing
-- Vote options: Adopt, Reject, Abstain
-- Modal-based voting experience with Internet Identity integration
+- Three-step voting flow with visual progress indicators: select → confirm → signing → success
+- Vote options: Adopt, Reject, Abstain with distinct iconography
+- Authentication gating - users must connect Internet Identity to vote
+- Neuron ID display throughout voting process for transparency
+- In-modal authentication prompts for unauthenticated users
+- Vote confirmation screen showing proposal details and selected vote
+- Simulated IC governance canister integration with error handling
+- Toast notifications for vote submission success/failure
+- Disabled vote buttons and clear messaging when not authenticated
 
 **Educational Platform**:
 - Interactive step-by-step tutorials
@@ -64,9 +76,27 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication & Security
 
-**Internet Identity Integration**: Client-side authentication using DFINITY's Internet Identity system (@dfinity/auth-client). The application supports neuron-based voting without requiring backend session management.
+**Internet Identity Integration**: 
+- Client-side authentication using DFINITY's Internet Identity system (@dfinity/auth-client)
+- AuthProvider context wraps entire application, providing authentication state globally
+- Login/logout flows handled through dedicated auth library (`client/src/lib/auth.ts`)
+- Principal ID and Neuron ID derivation from authenticated identity
+- Persistent session management across page refreshes
+- Header-based authentication UI with connect/disconnect functionality
+- User profile display showing truncated principal and full neuron ID
 
-**Client-Side Security**: All sensitive operations (voting, signing) happen client-side using DFINITY agent libraries, ensuring private keys never leave the user's browser.
+**Authentication Flow**:
+- Users click "Connect Identity" to initiate Internet Identity authentication
+- Upon successful authentication, principal and neuron ID are derived and stored in context
+- Authenticated state persists in browser session
+- VoteModal and other sensitive features check authentication status
+- Clear visual indicators throughout UI showing authentication state
+
+**Client-Side Security**: 
+- All sensitive operations (voting, signing) happen client-side using DFINITY agent libraries
+- Private keys never leave the user's browser
+- No backend session storage required
+- Trustless verification enables independent proposal validation
 
 ## External Dependencies
 
@@ -105,10 +135,47 @@ Preferred communication style: Simple, everyday language.
 
 ### Notable Architecture Decisions
 
+**Why Client-Side Authentication**: Internet Identity authentication happens entirely in the browser using @dfinity/auth-client. This eliminates the need for backend session management, reduces server complexity, and keeps private keys secure on the user's device.
+
 **Why Client-Side Verification**: Hash verification is performed client-side to maintain trustlessness - users can independently verify proposals without relying on the application's backend.
 
 **Why In-Memory Storage Initially**: The application currently uses in-memory storage with a clear migration path to PostgreSQL. This allows rapid development while maintaining production-ready database schemas.
 
+**Why Modal-Based Details View**: Proposal details are shown in a modal rather than a separate page to maintain context and enable quick transitions between viewing details and voting. State management ensures smooth handoffs between ProposalDetailsModal and VoteModal.
+
 **Why Wouter Over React Router**: Lightweight routing solution (1.8KB) chosen to minimize bundle size for a simple two-page application.
 
 **Why Shadcn UI**: Provides owned, customizable components instead of a dependency, allowing fine-grained control over the governance interface design while maintaining accessibility through Radix UI primitives.
+
+### Recent Updates (December 2025)
+
+**Authentication System**:
+- Implemented AuthProvider context for global authentication state
+- Added Internet Identity login/logout flows in Header component
+- Created auth utility library with principal/neuron ID derivation
+- Integrated authentication checks throughout voting flows
+
+**Proposal Details & Verification**:
+- Built ProposalDetailsModal with comprehensive proposal information display
+- Integrated verification panel showing hash comparison results
+- Added visual indicators for verification status (green for match, red for mismatch)
+- Included View on IC Dashboard external link
+
+**Enhanced Voting Experience**:
+- Enhanced VoteModal with authentication gating and neuron ID display
+- Implemented three-step voting flow with progress indicators
+- Added in-modal authentication prompts for unauthenticated users
+- Integrated toast notifications for user feedback
+- Fixed modal state orchestration for clean details→vote transitions
+
+**Filter & Sort Functionality**:
+- Implemented working status filter (All, Active, Executed, Rejected)
+- Added real-time search by proposal ID
+- Implemented three sort options: newest, oldest, most votes
+- Added empty state for no matching proposals
+
+**Learning Center**:
+- Created comprehensive educational resources page at `/learn`
+- Built interactive proposal type guides with real examples
+- Added hash verification tool with step-by-step instructions
+- Implemented verification script displays with copy functionality
