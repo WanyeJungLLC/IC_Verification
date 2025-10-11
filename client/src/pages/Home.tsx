@@ -8,7 +8,7 @@ import FilterBar from "@/components/FilterBar";
 import VoteModal from "@/components/VoteModal";
 import HelpModal from "@/components/HelpModal";
 import ProposalDetailsModal from "@/components/ProposalDetailsModal";
-import heroBannerImg from "@assets/Image 1_1760197898264.jpeg";
+import heroBannerImg from "@assets/Image 6_1760197968668.jpeg";
 import emptyStateImg from "@assets/Image 4_1760197946293.jpeg";
 
 export default function Home() {

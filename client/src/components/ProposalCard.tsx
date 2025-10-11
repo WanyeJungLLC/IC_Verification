@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Clock, XCircle, AlertCircle, Code, Shield, Network, Users } from "lucide-react";
-import proposalTypeImg from "@assets/Image 6_1760197968668.jpeg";
+import proposalTypeImg from "@assets/Image 1_1760197898264.jpeg";
 
 export type ProposalStatus = "Active" | "Executed" | "Rejected" | "Pending";
 export type ProposalType = "Canister Upgrade" | "IC OS Election" | "Node Provider" | "Participant Management";
