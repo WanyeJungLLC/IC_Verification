@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Code, Shield, Network, Users } from "lucide-react";
-import proposalDiagramImg from "@assets/Image 2_1760197927312.jpeg";
 
 const proposalTypes = [
   {
@@ -87,27 +86,12 @@ const proposalTypes = [
 export default function ProposalTypeGuide() {
   return (
     <Card className="p-6">
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
           <h2 className="text-2xl font-bold">Proposal Types & Verification</h2>
           <p className="text-muted-foreground mt-1">
             Learn what each proposal type does and how to verify it
           </p>
-        </div>
-
-        {/* Visual Diagram */}
-        <div className="rounded-lg overflow-hidden border bg-muted/30">
-          <img 
-            src={proposalDiagramImg} 
-            alt="IC Governance Proposal Types Diagram"
-            className="w-full h-auto"
-            data-testid="img-proposal-diagram"
-          />
-          <div className="p-4 bg-muted/50 border-t">
-            <p className="text-sm text-muted-foreground text-center">
-              <strong>Visual Overview:</strong> Understanding IC governance proposal types and their verification processes
-            </p>
-          </div>
         </div>
 
         <Tabs defaultValue="canister" className="w-full">

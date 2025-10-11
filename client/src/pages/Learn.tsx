@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, GraduationCap } from "lucide-react";
+import { ArrowLeft, GraduationCap, BookOpen, ShieldCheck } from "lucide-react";
 import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import ProposalTypeGuide from "@/components/ProposalTypeGuide";
@@ -8,6 +8,7 @@ import HashVerificationTool from "@/components/HashVerificationTool";
 import InteractiveTutorial from "@/components/InteractiveTutorial";
 import EducationalResources from "@/components/EducationalResources";
 import VerificationScriptDisplay from "@/components/VerificationScriptDisplay";
+import learningHeroImg from "@assets/Image 2_1760197927312.jpeg";
 
 export default function Learn() {
   const [, setLocation] = useLocation();
@@ -16,33 +17,41 @@ export default function Learn() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
+      {/* Hero Section */}
+      <section className="relative h-[400px] overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${learningHeroImg})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+        
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+          <div className="max-w-2xl text-white">
+            <div className="flex items-center gap-2 mb-4">
+              <ShieldCheck className="h-6 w-6 text-chart-2" />
+              <span className="text-sm font-medium text-chart-2">Learn & Verify</span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+              Learning Center
+            </h1>
+            <p className="text-lg text-gray-200 mb-6">
+              Master proposal verification and governance participation with interactive tutorials and comprehensive guides.
+            </p>
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={() => setLocation("/")}
-              className="gap-2"
+              className="gap-2 bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
               data-testid="button-back-home"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Proposals
             </Button>
           </div>
-
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-lg bg-primary/10">
-              <GraduationCap className="h-8 w-8 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold" data-testid="text-learn-title">
-                Learning Center
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                Master proposal verification and governance participation
-              </p>
-            </div>
-          </div>
+        </div>
+      </section>
+      
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-6">
 
           <Tabs defaultValue="tutorial" className="w-full">
             <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 mb-6">
