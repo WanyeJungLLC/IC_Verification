@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/lib/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import Home from "@/pages/Home";
 import Learn from "@/pages/Learn";
+import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -14,6 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/learn" component={Learn} />
+      <Route path="/about" component={About} />
       <Route component={NotFound} />
     </Switch>
   );
