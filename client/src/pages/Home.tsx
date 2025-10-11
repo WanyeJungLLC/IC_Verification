@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, Github, GraduationCap } from "lucide-react";
+import { HelpCircle, Github, GraduationCap, ArrowRight, ShieldCheck } from "lucide-react";
 import Header from "@/components/Header";
 import ProposalCard, { type Proposal } from "@/components/ProposalCard";
 import FilterBar from "@/components/FilterBar";
 import VoteModal from "@/components/VoteModal";
 import HelpModal from "@/components/HelpModal";
 import ProposalDetailsModal from "@/components/ProposalDetailsModal";
+import heroBannerImg from "@assets/Image 1_1760197898264.jpeg";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -145,7 +146,52 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Hero Section */}
+      <section className="relative h-[400px] overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroBannerImg})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+        
+        <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+          <div className="max-w-2xl text-white">
+            <div className="flex items-center gap-2 mb-4">
+              <ShieldCheck className="h-6 w-6 text-chart-2" />
+              <span className="text-sm font-medium text-chart-2">Verified On-Chain Governance</span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+              Internet Computer Governance Voting
+            </h1>
+            <p className="text-lg text-gray-200 mb-6">
+              Participate in the Network Nervous System by viewing, verifying, and voting on IC governance proposals with full transparency.
+            </p>
+            <div className="flex gap-3">
+              <Button 
+                size="lg"
+                onClick={() => document.getElementById('proposals-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="gap-2"
+                data-testid="button-view-proposals"
+              >
+                View Proposals
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Button 
+                size="lg"
+                variant="outline"
+                onClick={() => setLocation("/learn")}
+                className="gap-2 bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                data-testid="button-hero-learn"
+              >
+                <GraduationCap className="h-4 w-4" />
+                Learn More
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8" id="proposals-section">
         <div className="space-y-6">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
