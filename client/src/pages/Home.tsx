@@ -7,12 +7,14 @@ import ProposalCard, { type Proposal } from "@/components/ProposalCard";
 import FilterBar from "@/components/FilterBar";
 import VoteModal from "@/components/VoteModal";
 import HelpModal from "@/components/HelpModal";
+import ProposalDetailsModal from "@/components/ProposalDetailsModal";
 
 export default function Home() {
   const [, setLocation] = useLocation();
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   //todo: remove mock functionality - Using real proposal examples from docs
   const mockProposals: Proposal[] = [
@@ -99,7 +101,11 @@ export default function Home() {
   };
 
   const handleViewDetails = (proposalId: string) => {
-    console.log("View details for proposal:", proposalId);
+    const proposal = mockProposals.find(p => p.id === proposalId);
+    if (proposal) {
+      setSelectedProposal(proposal);
+      setIsDetailsModalOpen(true);
+    }
   };
 
   return (
@@ -164,15 +170,31 @@ export default function Home() {
       </main>
 
       {selectedProposal && (
-        <VoteModal
-          isOpen={isVoteModalOpen}
-          onClose={() => {
-            setIsVoteModalOpen(false);
-            setSelectedProposal(null);
-          }}
-          proposalId={selectedProposal.id}
-          proposalTitle={selectedProposal.title}
-        />
+        <>
+          <VoteModal
+            isOpen={isVoteModalOpen}
+            onClose={() => {
+              setIsVoteModalOpen(false);
+              setSelectedProposal(null);
+            }}
+            proposalId={selectedProposal.id}
+            proposalTitle={selectedProposal.title}
+          />
+          
+          <ProposalDetailsModal
+            isOpen={isDetailsModalOpen}
+            onClose={() => {
+              setIsDetailsModalOpen(false);
+              setSelectedProposal(null);
+            }}
+            proposal={selectedProposal}
+            onVote={() => {
+              setIsDetailsModalOpen(false);
+              setIsVoteModalOpen(true);
+              // Don't clear selectedProposal - let VoteModal handle it
+            }}
+          />
+        </>
       )}
 
       <HelpModal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} />
