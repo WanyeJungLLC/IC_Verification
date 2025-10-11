@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Clock, XCircle, AlertCircle } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, AlertCircle, Code, Shield, Network, Users } from "lucide-react";
+import proposalTypeImg from "@assets/Image 6_1760197968668.jpeg";
 
 export type ProposalStatus = "Active" | "Executed" | "Rejected" | "Pending";
 export type ProposalType = "Canister Upgrade" | "IC OS Election" | "Node Provider" | "Participant Management";
@@ -32,12 +33,60 @@ const statusConfig = {
   Pending: { icon: AlertCircle, color: "bg-muted hover:bg-muted" },
 };
 
+const proposalTypeConfig = {
+  "Canister Upgrade": { 
+    icon: Code, 
+    color: "from-blue-500/20 to-blue-600/10",
+    iconColor: "text-blue-500"
+  },
+  "IC OS Election": { 
+    icon: Shield, 
+    color: "from-purple-500/20 to-purple-600/10",
+    iconColor: "text-purple-500"
+  },
+  "Node Provider": { 
+    icon: Network, 
+    color: "from-green-500/20 to-green-600/10",
+    iconColor: "text-green-500"
+  },
+  "Participant Management": { 
+    icon: Users, 
+    color: "from-orange-500/20 to-orange-600/10",
+    iconColor: "text-orange-500"
+  },
+};
+
 export default function ProposalCard({ proposal, onVote, onViewDetails }: ProposalCardProps) {
   const StatusIcon = statusConfig[proposal.status].icon;
+  const TypeIcon = proposalTypeConfig[proposal.type].icon;
+  const typeConfig = proposalTypeConfig[proposal.type];
 
   return (
-    <Card className="p-6 hover-elevate active-elevate-2 transition-all duration-200" data-testid={`card-proposal-${proposal.id}`}>
-      <div className="space-y-4">
+    <Card className="overflow-hidden hover-elevate active-elevate-2 transition-all duration-200" data-testid={`card-proposal-${proposal.id}`}>
+      {/* Visual Header with Type Indicator */}
+      <div className="relative h-24 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-30"
+          style={{ backgroundImage: `url(${proposalTypeImg})` }}
+        />
+        <div className={`absolute inset-0 bg-gradient-to-br ${typeConfig.color}`} />
+        <div className="relative h-full flex items-center justify-between px-6">
+          <div className="flex items-center gap-3">
+            <div className={`p-2.5 rounded-lg bg-background/90 backdrop-blur-sm ${typeConfig.iconColor}`}>
+              <TypeIcon className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground font-medium">Proposal Type</p>
+              <p className={`text-sm font-semibold ${typeConfig.iconColor}`}>{proposal.type}</p>
+            </div>
+          </div>
+          {proposal.isVerified && (
+            <CheckCircle2 className="h-5 w-5 text-chart-2 shrink-0" data-testid={`icon-verified-${proposal.id}`} />
+          )}
+        </div>
+      </div>
+
+      <div className="p-6 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1 flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
@@ -56,19 +105,9 @@ export default function ProposalCard({ proposal, onVote, onViewDetails }: Propos
               {proposal.title}
             </h3>
           </div>
-          
-          {proposal.isVerified && (
-            <CheckCircle2 className="h-5 w-5 text-chart-2 shrink-0" data-testid={`icon-verified-${proposal.id}`} />
-          )}
         </div>
 
         <div className="space-y-2 text-sm">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-muted-foreground">Type</span>
-            <Badge variant="outline" className="text-xs shrink-0" data-testid={`badge-type-${proposal.id}`}>
-              {proposal.type}
-            </Badge>
-          </div>
           <div className="flex items-center justify-between gap-2">
             <span className="text-muted-foreground">Proposer</span>
             <span className="font-mono text-xs truncate max-w-[60%]" data-testid={`text-proposer-${proposal.id}`}>
