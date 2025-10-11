@@ -1,24 +1,11 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, Network } from "lucide-react";
+import { LogIn, LogOut, Network, Loader2 } from "lucide-react";
 import ConnectionStatus from "./ConnectionStatus";
 import ThemeToggle from "./ThemeToggle";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Header() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [neuronId, setNeuronId] = useState<string>();
-
-  const handleConnect = () => {
-    console.log("Internet Identity login triggered");
-    setIsConnected(true);
-    setNeuronId("1234567890abcdef");
-  };
-
-  const handleDisconnect = () => {
-    console.log("Disconnect triggered");
-    setIsConnected(false);
-    setNeuronId(undefined);
-  };
+  const { isAuthenticated, neuronId, login, logout, isLoading } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -35,27 +22,37 @@ export default function Header() {
           </div>
 
           <div className="flex items-center gap-3">
-            <ConnectionStatus isConnected={isConnected} neuronId={neuronId} />
+            <ConnectionStatus isConnected={isAuthenticated} neuronId={neuronId || undefined} />
             
-            {isConnected ? (
+            {isAuthenticated ? (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleDisconnect}
+                onClick={logout}
+                disabled={isLoading}
                 data-testid="button-disconnect"
                 className="gap-2"
               >
-                <LogOut className="h-4 w-4" />
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LogOut className="h-4 w-4" />
+                )}
                 <span className="hidden sm:inline">Disconnect</span>
               </Button>
             ) : (
               <Button
                 size="sm"
-                onClick={handleConnect}
+                onClick={login}
+                disabled={isLoading}
                 data-testid="button-connect"
                 className="gap-2"
               >
-                <LogIn className="h-4 w-4" />
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LogIn className="h-4 w-4" />
+                )}
                 <span className="hidden sm:inline">Connect Identity</span>
               </Button>
             )}
