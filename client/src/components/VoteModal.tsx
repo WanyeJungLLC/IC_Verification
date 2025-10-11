@@ -7,8 +7,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ThumbsUp, ThumbsDown, Minus, Loader2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ThumbsUp, ThumbsDown, Minus, Loader2, ShieldCheck, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
+import { useToast } from "@/hooks/use-toast";
 
 interface VoteModalProps {
   isOpen: boolean;
@@ -23,17 +26,43 @@ type VoteStep = "select" | "confirm" | "signing" | "success";
 export default function VoteModal({ isOpen, onClose, proposalId, proposalTitle }: VoteModalProps) {
   const [voteChoice, setVoteChoice] = useState<VoteChoice>(null);
   const [step, setStep] = useState<VoteStep>("select");
+  const { isAuthenticated, neuronId, login } = useAuth();
+  const { toast } = useToast();
 
   const handleVoteSelect = (choice: VoteChoice) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please connect your Internet Identity to vote",
+        variant: "destructive",
+      });
+      return;
+    }
     setVoteChoice(choice);
     setStep("confirm");
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setStep("signing");
-    setTimeout(() => {
+    
+    // Simulate IC governance canister call
+    try {
+      // In real app: await governanceCanister.vote(proposalId, voteChoice, neuronId)
+      await new Promise(resolve => setTimeout(resolve, 2000));
       setStep("success");
-    }, 2000);
+      
+      toast({
+        title: "Vote Submitted Successfully",
+        description: `Your ${voteChoice} vote has been recorded on-chain`,
+      });
+    } catch (error) {
+      toast({
+        title: "Vote Failed",
+        description: "Failed to submit vote. Please try again.",
+        variant: "destructive",
+      });
+      setStep("confirm");
+    }
   };
 
   const handleClose = () => {
@@ -80,20 +109,54 @@ export default function VoteModal({ isOpen, onClose, proposalId, proposalTitle }
           </div>
 
           {step === "select" && (
-            <div className="grid grid-cols-3 gap-3">
-              {voteOptions.map((option) => (
-                <Button
-                  key={option.value}
-                  variant="outline"
-                  className="flex-col h-24 gap-2"
-                  onClick={() => handleVoteSelect(option.value)}
-                  data-testid={`button-vote-${option.value}`}
-                >
-                  <option.icon className="h-6 w-6" />
-                  <span>{option.label}</span>
-                </Button>
-              ))}
-            </div>
+            <>
+              {!isAuthenticated && (
+                <Card className="p-4 bg-chart-3/10 border-chart-3/20">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-chart-3 mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-sm mb-1">Authentication Required</h4>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Connect your Internet Identity to vote on proposals
+                      </p>
+                      <Button size="sm" onClick={login} data-testid="button-connect-to-vote">
+                        Connect Identity
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
+              {isAuthenticated && neuronId && (
+                <Card className="p-3 bg-chart-2/10 border-chart-2/20">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-chart-2" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-muted-foreground">Voting with Neuron</p>
+                      <code className="text-xs font-mono truncate block" data-testid="text-voting-neuron">
+                        {neuronId}
+                      </code>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              
+              <div className="grid grid-cols-3 gap-3">
+                {voteOptions.map((option) => (
+                  <Button
+                    key={option.value}
+                    variant="outline"
+                    className="flex-col h-24 gap-2"
+                    onClick={() => handleVoteSelect(option.value)}
+                    disabled={!isAuthenticated}
+                    data-testid={`button-vote-${option.value}`}
+                  >
+                    <option.icon className="h-6 w-6" />
+                    <span>{option.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </>
           )}
 
           {step === "confirm" && voteChoice && (
@@ -112,6 +175,12 @@ export default function VoteModal({ isOpen, onClose, proposalId, proposalTitle }
                   <span className="text-sm text-muted-foreground">Proposal</span>
                   <span className="text-sm font-mono">#{proposalId}</span>
                 </div>
+                {neuronId && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Neuron ID</span>
+                    <code className="text-xs font-mono bg-background px-2 py-1 rounded">{neuronId}</code>
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
                 <Button 
