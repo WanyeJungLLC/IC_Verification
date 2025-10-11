@@ -9,6 +9,7 @@ import VoteModal from "@/components/VoteModal";
 import HelpModal from "@/components/HelpModal";
 import ProposalDetailsModal from "@/components/ProposalDetailsModal";
 import heroBannerImg from "@assets/Image 1_1760197898264.jpeg";
+import emptyStateImg from "@assets/Image 4_1760197946293.jpeg";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -239,10 +240,34 @@ export default function Home() {
                 />
               ))
             ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-muted-foreground" data-testid="text-no-results">
-                  No proposals found matching your filters
-                </p>
+              <div className="col-span-full flex flex-col items-center justify-center py-12 space-y-6">
+                <div className="max-w-md w-full">
+                  <img 
+                    src={emptyStateImg} 
+                    alt="No proposals found"
+                    className="w-full h-auto rounded-lg opacity-80"
+                    data-testid="img-empty-state"
+                  />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg font-semibold" data-testid="text-no-results">
+                    No Proposals Found
+                  </h3>
+                  <p className="text-muted-foreground max-w-md">
+                    Try adjusting your filters or search criteria to find relevant proposals
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setStatusFilter("all");
+                      setSearchQuery("");
+                    }}
+                    className="mt-4"
+                    data-testid="button-clear-filters"
+                  >
+                    Clear All Filters
+                  </Button>
+                </div>
               </div>
             )}
           </div>
