@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, Clock, XCircle, AlertCircle } from "lucide-react";
 
 export type ProposalStatus = "Active" | "Executed" | "Rejected" | "Pending";
+export type ProposalType = "Canister Upgrade" | "IC OS Election" | "Node Provider" | "Participant Management";
 
 export interface Proposal {
   id: string;
@@ -15,6 +16,7 @@ export interface Proposal {
   votesAgainst: number;
   isVerified: boolean;
   topic: string;
+  type: ProposalType;
 }
 
 interface ProposalCardProps {
@@ -61,6 +63,12 @@ export default function ProposalCard({ proposal, onVote, onViewDetails }: Propos
         </div>
 
         <div className="space-y-2 text-sm">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-muted-foreground">Type</span>
+            <Badge variant="outline" className="text-xs shrink-0" data-testid={`badge-type-${proposal.id}`}>
+              {proposal.type}
+            </Badge>
+          </div>
           <div className="flex items-center justify-between gap-2">
             <span className="text-muted-foreground">Proposer</span>
             <span className="font-mono text-xs truncate max-w-[60%]" data-testid={`text-proposer-${proposal.id}`}>
