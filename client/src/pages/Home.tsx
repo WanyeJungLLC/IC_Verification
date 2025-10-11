@@ -15,6 +15,11 @@ export default function Home() {
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  
+  // Filter and sort state
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("newest");
 
   //todo: remove mock functionality - Using real proposal examples from docs
   const mockProposals: Proposal[] = [
@@ -108,6 +113,34 @@ export default function Home() {
     }
   };
 
+  // Filter and sort proposals
+  const filteredAndSortedProposals = mockProposals
+    .filter(proposal => {
+      // Status filter
+      if (statusFilter !== "all" && proposal.status.toLowerCase() !== statusFilter) {
+        return false;
+      }
+      
+      // Search filter
+      if (searchQuery && !proposal.id.includes(searchQuery)) {
+        return false;
+      }
+      
+      return true;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          return parseInt(b.id) - parseInt(a.id);
+        case "oldest":
+          return parseInt(a.id) - parseInt(b.id);
+        case "votes":
+          return (b.votesFor + b.votesAgainst) - (a.votesFor + a.votesAgainst);
+        default:
+          return 0;
+      }
+    });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -144,20 +177,28 @@ export default function Home() {
           </div>
 
           <FilterBar
-            onStatusChange={(status) => console.log("Filter by status:", status)}
-            onSearchChange={(search) => console.log("Search:", search)}
-            onSortChange={(sort) => console.log("Sort by:", sort)}
+            onStatusChange={setStatusFilter}
+            onSearchChange={setSearchQuery}
+            onSortChange={setSortBy}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockProposals.map((proposal) => (
-              <ProposalCard
-                key={proposal.id}
-                proposal={proposal}
-                onVote={handleVote}
-                onViewDetails={handleViewDetails}
-              />
-            ))}
+            {filteredAndSortedProposals.length > 0 ? (
+              filteredAndSortedProposals.map((proposal) => (
+                <ProposalCard
+                  key={proposal.id}
+                  proposal={proposal}
+                  onVote={handleVote}
+                  onViewDetails={handleViewDetails}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-muted-foreground" data-testid="text-no-results">
+                  No proposals found matching your filters
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-4">
